@@ -34,6 +34,6 @@ Build fully distributed Hadoop on the cluster formed by these four VMs.
 
 Then press "enter key" for file and passphrase, which means setting these values as default, as shown in the following figure:             
 
-![](../img/posts20191013/001.png)
+![](../img/posts20191013/001.jpg)
 
 
