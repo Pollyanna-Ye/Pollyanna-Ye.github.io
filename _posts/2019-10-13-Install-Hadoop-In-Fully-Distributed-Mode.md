@@ -4,12 +4,12 @@ title:      Hadoop Installation Guidance
 subtitle:   Install Hadoop in Fully Distributed Mode on AWS
 date:       2019-10-13
 author:     Susu
-header-img: img/post-bg-ios9-web.jpg
+header-img: img/posts20191013/header_bg.jpg
 catalog: 	 true
 tags:
     - Big Data
     - Hadoop
-    - Fully Distributed Mode
+    - Hadoop Installation
 ---
 
 ## Before Start
@@ -32,7 +32,7 @@ Build fully distributed Hadoop on the cluster formed by these four VMs.
 
 `ssh-keygen`
 
-Then press "enter key" for file and passphrase, which means setting these values as default.             
+Then press "enter key" for file and passphrase, which means setting these values as default, as shown in the following figure:             
 
 ![](../img/posts20191013/001.png)
 
