@@ -1,7 +1,7 @@
 ---
 layout:     post
 title:      Hadoop Installation Guidance 
-subtitle:   Install It in Fully Distributed Mode on AWS
+subtitle:   Install Hadoop in Fully Distributed Mode on AWS
 date:       2019-10-13
 author:     Susu
 header-img: img/post-bg-ios9-web.jpg
@@ -34,6 +34,6 @@ Build fully distributed Hadoop on the cluster formed by these four VMs.
 
 Then press "enter key" for file and passphrase, which means setting these values as default.             
 
-![](img/posts20191013/001.png)
+![](../img/posts20191013/001.png)
 
 
