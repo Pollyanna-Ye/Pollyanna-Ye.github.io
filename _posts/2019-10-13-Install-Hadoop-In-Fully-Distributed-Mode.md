@@ -14,11 +14,11 @@ tags:
 
 ## Before Start
 
-Having some virtual machines (VM) launched on Amazon Web Service (AWS).  
+1. Make sure you have some virtual machines (VM) launched on Amazon Web Service (AWS).  
 
-I launched four VMs, you can choose to launch more.  And the Hadoop Version I installed is Hadoop-2.6.5, this configuration works for Hadoop-2.X.X versions.
+2. I launched four VMs, you can choose to launch more.  And the Hadoop Version I installed is Hadoop-2.6.5, this configuration works for Hadoop-2.X.X versions.  You can take my blog as an example and configure your VMs.
 
-You can take my blog as an example and configure your VMs.
+3. At the beginning of each **Section**, it tells whether you have to do the configuration for all VMs or just one of them. 
 
 **Note: recently I noticed that if you keep your Hadoop idling on AWS, AWS may consider the connection between your VMs as DOS Attack and shut down network ports used by Hadoop.**
 
@@ -34,7 +34,7 @@ Build fully distributed Hadoop on the cluster formed by these four VMs.
 
 Then press "enter key" for file and passphrase, which means setting these values as default.             
 
-![](https://github.com/Pollyanna-Ye/Pollyanna-Ye.github.io/blob/master/img/posts20191013/001.jpg)
+![]([https://raw.githubusercontent.com/Pollyanna-Ye/Pollyanna-Ye.github.io/master/img/posts20191013/001.jpg](https://raw.githubusercontent.com/Pollyanna-Ye/Pollyanna-Ye.github.io/master/img/posts20191013/001.jpg)
 
 Then type the following in the Terminal of each VM:
 
@@ -64,7 +64,7 @@ Certainly, I can also use its public address.
 
 Add the following entries into it:
 
-![](https://github.com/Pollyanna-Ye/Pollyanna-Ye.github.io/blob/master/img/posts20191013/002.jpg)
+![]([https://raw.githubusercontent.com/Pollyanna-Ye/Pollyanna-Ye.github.io/master/img/posts20191013/001.jpg](https://raw.githubusercontent.com/Pollyanna-Ye/Pollyanna-Ye.github.io/master/img/posts20191013/002.jpg)
 
 These four lines are the contact info for each computer.  For instance, the IP address "172.31.11.234" is for the computer named "master".
 
@@ -80,4 +80,148 @@ First of all, type the following command in the Terminal to update the repositor
 
 `sudo apt-get update`
 
-Then type the following command to 
+Then type the following command to install Java
+
+`sudo apt-get install default-jdk`
+
+After executing, you can find your java at the directory of `/usr/lib/jvm`, let's take a look at it:
+
+`cd /usr/lib/jvm`
+
+As shown in the figure, these are JDKs (Java Development Kit) I see in my VM, `java-8-openjdk-amd64` is the latest one:
+
+![]([https://raw.githubusercontent.com/Pollyanna-Ye/Pollyanna-Ye.github.io/master/img/posts20191013/001.jpg](https://raw.githubusercontent.com/Pollyanna-Ye/Pollyanna-Ye.github.io/master/img/posts20191013/003.jpg)
+
+Add `JAVA_HOME` information to file `~/.bash_profile`:
+
+`vim ~/.bash_profile`
+
+Add the following:
+
+![]([https://raw.githubusercontent.com/Pollyanna-Ye/Pollyanna-Ye.github.io/master/img/posts20191013/001.jpg](https://raw.githubusercontent.com/Pollyanna-Ye/Pollyanna-Ye.github.io/master/img/posts20191013/004.jpg)
+
+Source this file and makes it taking effect:
+
+`source ~/.bash_profile`
+
+
+## Download and Extract Hadoop
+
+**This section only needs to be done in "Master" VM.** What we do is configure Hadoop in one VM, and then send a copy of this configured Hadoop to other VMs.
+
+Click in to [Apache Hadoop Download Page](http://hadoop.apache.org/releases.html), and download the **binary** file of Haodop.  
+
+![]([https://raw.githubusercontent.com/Pollyanna-Ye/Pollyanna-Ye.github.io/master/img/posts20191013/001.jpg](https://raw.githubusercontent.com/Pollyanna-Ye/Pollyanna-Ye.github.io/master/img/posts20191013/005.jpg)
+
+Go back to home directory (because I wanna install Hadoop in my home directory. You can choose any other directory you prefer, just make sure you change all the related path info):
+
+`cd ~`
+
+And typing the following command in Terminal to download:
+
+`wget http://apache.mirrors.ionfish.org/hadoop/common/hadoop-2.6.5/hadoop-2.6.5.tar.gz`
+
+And using the following command to extract Hadoop:
+
+`tar  -xvzf  hadoop-2.6.5.tar.gz`
+
+Now, type the following command to get the **absolute path** of your Hadoop, and keep this path in mind:
+
+`cd hadoop-2.6.5`
+`pwd`
+
+My Hadoop's abusolute path is `/home/ubuntu/hadoop-2.6.5`.
+
+## Configure ~/.bash_profile
+
+**You have to do this for all VMs.**
+
+For each VM, edit `~/.bash_profile` :
+
+`vim ~/.bash_profile`
+
+Add the following content:
+
+`export HADOOP_HOME=/home/ubuntu/hadoop-2.6.5`
+`export PATH=$PATH:$HADOOP_HOME/bin`
+`export PATH=$PATH:$HADOOP_HOME/sbin`
+`export HADOOP_MAPRED_HOME=$HADOOP_HOME`
+`export HADOOP_COMMON_HOME=$HADOOP_HOME`
+`export HADOOP_HDFS_HOME=$HADOOP_HOME`
+`export YARN_HOME=$HADOOP_HOME`
+
+For `HADOOP_HOME`, it is the **absolute path**  of my Hadoop, you can change it to yours.  And make sure all the VMs save the Hadoop at the same directory.  Now this is how my `~/.bash_profile` looks like:
+
+![]([https://raw.githubusercontent.com/Pollyanna-Ye/Pollyanna-Ye.github.io/master/img/posts20191013/001.jpg](https://raw.githubusercontent.com/Pollyanna-Ye/Pollyanna-Ye.github.io/master/img/posts20191013/006.jpg)
+
+Similarly, source my `~/.bash_profile`:
+
+`source ~/.bash_profile` 
+
+## Configure Hadoop
+
+**This section only needs to be done in "Master" VM.** 
+
+Firstly, enter Hadoop configuration directory:
+
+`cd hadoop-2.6.5/etc/hadoop/`
+
+The following files need to be configured:
+
+1. core-site.xml 
+2. hdfs-site.xml
+3. mapred-site.xml
+4. yarn-site.xml
+5. hadoop-env.sh
+6. slaves
+7. masters
+
+**The following path configured is based on my Hadoop's absolute path, make sure change to your corresponding path.**
+For `core-site.xml`, we add the following:
+
+```
+<configuration>
+  <property>
+      <name>fs.defaultFS</name> <!-- this is to configure HDFS-->
+      <value>hdfs://master:9000/</value> <!--"master" is configured by use in the file /etc/hosts -->
+  </property>
+  <property>
+      <name>hadoop.tmp.dir</name> <!--configure directory to save temp file-->
+      <value>file:/home/ubuntu/hadoop-2.6.5/tmp</value>  </property>
+</configuration
+```
+
+For `hdfs-site.xml`, add the following:
+
+```
+<configuration>
+    <property> <!--directory of namenode file -->
+        <name>dfs.namenode.name.dir</name>
+        <value>file:/home/ubuntu/hadoop-2.6.5/dfs/name</value>  
+    </property>
+    <property> <!--directory of datanode file -->
+        <name>dfs.datanode.data.dir</name>
+        <value>file:/home/ubuntu/hadoop-2.6.5/dfs/data</value> 
+    </property>
+    <property>  <!--This configure the number of replicas-->
+        <name>dfs.replication</name>
+        <value>3</value>
+    </property>
+</configuration>
+```
+For `mapred-site.xml`, notice that there is no `mapred-site.xml` in this directory, but it has `mapred-site.xml.template`, so you have to first create an `mapred-site.xml` by typing the following command:
+
+`cp mapred-site.xml.template mapred-site.xml`
+
+And add the following content to it:
+
+```
+<configuration>
+    <property>
+        <name>mapreduce.framework.name</name>
+        <value>yarn</value>
+    </property>
+</configuration>
+```
+
+
