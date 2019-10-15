@@ -225,3 +225,227 @@ And add the following content to it:
     </property>
 </configuration>
 ```
+
+And the following is for `yarn-site.xml`:
+
+```
+<configuration>
+     <property>
+         <name>yarn.nodemanager.aux-services</name>
+         <value>mapreduce_shuffle</value>
+     </property>
+     <property>
+         <name>yarn.nodemanager.aux-services.mapreduce.shuffle.class</name>
+         <value>org.apache.hadoop.mapred.ShuffleHandler</value>
+     </property>
+     <property> <!--master means the same as previous file-->
+         <name>yarn.resourcemanager.address</name>
+         <value>master:8032</value>
+     </property>
+     <property>
+         <name>yarn.resourcemanager.scheduler.address</name>
+         <value>master:8030</value>
+     </property>
+     <property>
+         <name>yarn.resourcemanager.resource-tracker.address</name>
+         <value>master:8035</value>
+     </property>
+     <property>
+         <name>yarn.resourcemanager.admin.address</name>
+         <value>master:8033</value>
+     </property>
+     <property>
+         <name>yarn.resourcemanager.webapp.address</name>
+         <value>master:8088</value>
+     </property>
+</configuration>
+
+```
+
+Then, configure Hadoop environment variables, add the following to your `hadoop-env.sh`:
+
+```
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 
+export HADOOP_PREFIX=/home/ubuntu/hadoop-2.6.5
+
+
+# Set hadoop configuration path
+export HADOOP_CONF_DIR=/home/ubuntu/hadoop-2.6.5/etc/hadoop/  
+export HADOOP_HOME=/home/ubuntu/hadoop-2.6.5 
+
+
+# add hadoop packages
+for file in $HADOOP_HOME/share/hadoop/*/lib/*.jar
+do
+	export CLASSPATH=$CLASSPATH:$file
+done
+
+for file in $HADOOP_HOME/share/hadoop/*/*.jar
+do
+	export CLASSPATH=$CLASSPATH:$file
+done
+```
+
+Then source  `hadoop-env.sh` file:
+
+`source hadoop-env.sh`
+
+Add the following to  `slaves`, slave1-3 stands for the other three VMs configured in `/etc/hosts`:
+
+![](https://raw.githubusercontent.com/Pollyanna-Ye/Pollyanna-Ye.github.io/master/img/posts20191013/007.jpg)
+
+Change  `masters` file to the following:	
+
+`master`
+
+
+## Send Configured Hadoop to Other VMs
+
+**Only do on master VM.**
+
+Using the following commands one by one:
+
+```
+scp  -r  ~/hadoop-2.6.5  slave1:~
+scp  -r  ~/hadoop-2.6.5  slave2:~
+scp  -r  ~/hadoop-2.6.5  slave3:~
+```
+
+## Format HDFS And Start Hadoop
+
+In your mater node, using the following command to format name node:
+
+`hdfs namenode -format`
+
+Then you can use the following two commands to start Hdfs deamon and yarn deamon:
+
+```
+start-dfs.sh
+start-yarn.sh
+```
+
+Now if you use `jps` command on all your VMs, you are supposed to see the following  processes on the master node:
+
+![](https://raw.githubusercontent.com/Pollyanna-Ye/Pollyanna-Ye.github.io/master/img/posts20191013/008.jpg)
+
+And on all slave nodes, you are supposed to see the following processes:
+
+![](https://raw.githubusercontent.com/Pollyanna-Ye/Pollyanna-Ye.github.io/master/img/posts20191013/009.jpg)
+
+**Now, Fully Distributed Hadoop is successfully installed and launched!!**
+
+## Examples
+
+Let's run a **word count** example:
+
+`vim WordCount.java`
+
+Add the following code into it :
+
+```
+import java.io.IOException;
+import java.util.StringTokenizer;
+
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapred.OutputCollector;
+import org.apache.hadoop.mapred.Reporter;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+
+public class WordCount {
+    
+    public static class WordMapper extends  Mapper <Object, Text, Text, IntWritable>{
+        private final static IntWritable one = new IntWritable(1);
+        private Text word = new Text();
+        
+        public void map (Object key, Text value, Context context) throws IOException, InterruptedException {
+            StringTokenizer itr = new StringTokenizer(value.toString());
+            while (itr.hasMoreTokens()){
+                word.set(itr.nextToken());
+                context.write(word, one);
+            }
+        }
+    }
+    
+    public static class WordReducer extends  Reducer <Text, IntWritable, Text, IntWritable> {
+        
+        private IntWritable result = new IntWritable();
+        
+        public void reduce (Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException{
+            int sum = 0;
+            for (IntWritable val : values){
+                sum+=val.get();
+            }
+            result.set(sum);
+            context.write(key, result);
+        }
+    }
+    
+    
+    public static void main (String args []) throws Exception{
+        Configuration conf = new Configuration ();
+        Job job = Job.getInstance (conf, "WordCount");
+        
+        FileInputFormat.addInputPath(job, new Path (args[0]));
+        FileOutputFormat.setOutputPath(job, new Path (args[1]));
+        
+        job.setJarByClass(WordCount.class);
+        job.setMapperClass (WordMapper.class);
+        job.setReducerClass (WordReducer.class);
+        
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(IntWritable.class);
+
+        System.exit(job.waitForCompletion(true) ? 0 : 1);
+        
+    }
+}
+```
+
+Type the following command to compile `WordCount.java`:
+
+`javac WordCount.java`
+
+Now you will see three class files:
+
+![](https://raw.githubusercontent.com/Pollyanna-Ye/Pollyanna-Ye.github.io/master/img/posts20191013/010.jpg)
+
+And then pack these three class files into a jar package:
+
+`jar  cvf  WordCount.jar *.class`
+
+Now we can have code to run in Hadoop.  Now let's create an input file to test our code:
+
+`vim  A.txt`
+
+Add the following:
+
+`you are my sunshine`
+
+Then create an input directory in the root directory of HDFS:
+
+`bin/hdfs dfs -mkdir /input`
+
+Now we have the input in HDFS, and also the code, we can use the following command to run our code using Hadoop:
+
+`bin/hadoop jar WordCount.jar WordCount /input /output` 
+
+The last two parameters set the input path and output path.  Output path should not exist on HDFS, Hadoop will create an output path for you.  But if we set output directory to be an existing directory, Hadoop will throw an error.  
+
+Then you should see the following in your Terminal.
+
+![](https://raw.githubusercontent.com/Pollyanna-Ye/Pollyanna-Ye.github.io/master/img/posts20191013/011.jpg)
+
+After execution, you can using the following command to retrieve the result from HDFS:
+
+`bin/hdfs dfs -get /output`
+
+In the output directory, you should see two files: `_SUCCESS` and `part-r-00000`. `_SUCCESS` means you have run your code successfully.  `part-r-00000` saves your result.  You are supposed to see the following in your output directory:
+
+![](https://raw.githubusercontent.com/Pollyanna-Ye/Pollyanna-Ye.github.io/master/img/posts20191013/012.jpg)
