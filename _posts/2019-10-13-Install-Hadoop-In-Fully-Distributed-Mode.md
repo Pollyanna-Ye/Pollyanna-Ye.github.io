@@ -34,7 +34,7 @@ Build fully distributed Hadoop on the cluster formed by these four VMs.
 
 Then press "enter key" for file and passphrase, which means setting these values as default.             
 
-![](https://raw.githubusercontent.com/Pollyanna-Ye/Pollyanna-Ye.github.io/master/img/posts20191013/001.jpg](https://raw.githubusercontent.com/Pollyanna-Ye/Pollyanna-Ye.github.io/master/img/posts20191013/001.jpg)
+![](https://raw.githubusercontent.com/Pollyanna-Ye/Pollyanna-Ye.github.io/master/img/posts20191013/001.jpg)
 
 Then type the following in the Terminal of each VM:
 
@@ -64,7 +64,7 @@ Certainly, I can also use its public address.
 
 Add the following entries into it:
 
-![](https://raw.githubusercontent.com/Pollyanna-Ye/Pollyanna-Ye.github.io/master/img/posts20191013/001.jpg](https://raw.githubusercontent.com/Pollyanna-Ye/Pollyanna-Ye.github.io/master/img/posts20191013/002.jpg)
+![](https://raw.githubusercontent.com/Pollyanna-Ye/Pollyanna-Ye.github.io/master/img/posts20191013/002.jpg)
 
 These four lines are the contact info for each computer.  For instance, the IP address "172.31.11.234" is for the computer named "master".
 
@@ -90,7 +90,7 @@ After executing, you can find your java at the directory of `/usr/lib/jvm`, let'
 
 As shown in the figure, these are JDKs (Java Development Kit) I see in my VM, `java-8-openjdk-amd64` is the latest one:
 
-![](https://raw.githubusercontent.com/Pollyanna-Ye/Pollyanna-Ye.github.io/master/img/posts20191013/001.jpg](https://raw.githubusercontent.com/Pollyanna-Ye/Pollyanna-Ye.github.io/master/img/posts20191013/003.jpg)
+![](https://raw.githubusercontent.com/Pollyanna-Ye/Pollyanna-Ye.github.io/master/img/posts20191013/003.jpg)
 
 Add `JAVA_HOME` information to file `~/.bash_profile`:
 
@@ -98,7 +98,7 @@ Add `JAVA_HOME` information to file `~/.bash_profile`:
 
 Add the following:
 
-![](https://raw.githubusercontent.com/Pollyanna-Ye/Pollyanna-Ye.github.io/master/img/posts20191013/001.jpg](https://raw.githubusercontent.com/Pollyanna-Ye/Pollyanna-Ye.github.io/master/img/posts20191013/004.jpg)
+![](https://raw.githubusercontent.com/Pollyanna-Ye/Pollyanna-Ye.github.io/master/img/posts20191013/004.jpg)
 
 Source this file and makes it taking effect:
 
@@ -111,7 +111,7 @@ Source this file and makes it taking effect:
 
 Click in to [Apache Hadoop Download Page](http://hadoop.apache.org/releases.html), and download the **binary** file of Haodop.  
 
-![](https://raw.githubusercontent.com/Pollyanna-Ye/Pollyanna-Ye.github.io/master/img/posts20191013/001.jpg](https://raw.githubusercontent.com/Pollyanna-Ye/Pollyanna-Ye.github.io/master/img/posts20191013/005.jpg)
+![](https://raw.githubusercontent.com/Pollyanna-Ye/Pollyanna-Ye.github.io/master/img/posts20191013/005.jpg)
 
 Go back to home directory (because I wanna install Hadoop in my home directory. You can choose any other directory you prefer, just make sure you change all the related path info):
 
@@ -142,17 +142,19 @@ For each VM, edit `~/.bash_profile` :
 
 Add the following content:
 
-`export HADOOP_HOME=/home/ubuntu/hadoop-2.6.5`
-`export PATH=$PATH:$HADOOP_HOME/bin`
-`export PATH=$PATH:$HADOOP_HOME/sbin`
-`export HADOOP_MAPRED_HOME=$HADOOP_HOME`
-`export HADOOP_COMMON_HOME=$HADOOP_HOME`
-`export HADOOP_HDFS_HOME=$HADOOP_HOME`
-`export YARN_HOME=$HADOOP_HOME`
+```
+export HADOOP_HOME=/home/ubuntu/hadoop-2.6.5
+export PATH=$PATH:$HADOOP_HOME/bin
+export PATH=$PATH:$HADOOP_HOME/sbin
+export HADOOP_MAPRED_HOME=$HADOOP_HOME
+export HADOOP_COMMON_HOME=$HADOOP_HOME
+export HADOOP_HDFS_HOME=$HADOOP_HOME
+export YARN_HOME=$HADOOP_HOME
+```
 
 For `HADOOP_HOME`, it is the **absolute path**  of my Hadoop, you can change it to yours.  And make sure all the VMs save the Hadoop at the same directory.  Now this is how my `~/.bash_profile` looks like:
 
-![](https://raw.githubusercontent.com/Pollyanna-Ye/Pollyanna-Ye.github.io/master/img/posts20191013/001.jpg](https://raw.githubusercontent.com/Pollyanna-Ye/Pollyanna-Ye.github.io/master/img/posts20191013/006.jpg)
+![](https://raw.githubusercontent.com/Pollyanna-Ye/Pollyanna-Ye.github.io/master/img/posts20191013/006.jpg)
 
 Similarly, source my `~/.bash_profile`:
 
@@ -223,5 +225,3 @@ And add the following content to it:
     </property>
 </configuration>
 ```
-
-
