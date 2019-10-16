@@ -78,7 +78,7 @@ And some dependencies are necessary for using mysql, use the following command t
 sudo apt install libmysqlclient-dev
 ```
 
-### Download Other Necessary Packages
+#### Download Other Necessary Packages
 
 The following packages are required, because of copyright reason, you can find your own way to download these packages online.
 
