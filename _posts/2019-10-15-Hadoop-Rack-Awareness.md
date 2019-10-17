@@ -1,6 +1,6 @@
 ---
 layout:     post
-title:      Hadoop Rack Information Configuration
+title:      Hadoop Rack Awareness Configuration
 subtitle:   Showing How To Configure Rack Information In Hadoop
 date:       2019-10-15
 author:     Susu
@@ -99,6 +99,6 @@ You should see the following:
 ![](https://raw.githubusercontent.com/Pollyanna-Ye/Pollyanna-Ye.github.io/master/img/posts20191015-1/002.jpg)
 
 
-## Reference:
+## Reference
 [http://fibrevillage.com/storage/638-hadoop-rack-awareness-what-s-it-and-how-to-config](http://fibrevillage.com/storage/638-hadoop-rack-awareness-what-s-it-and-how-to-config)
 
