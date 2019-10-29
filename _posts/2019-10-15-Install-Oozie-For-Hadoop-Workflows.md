@@ -91,7 +91,7 @@ The following packages are required, because of copyright reason, you can find y
 The first two packages are necessary for Oozie.
 And the last three packages, I think is optional.  But a lot of people recommended to put them in maven's library, so I put them under the directory of `apache-maven-3.5.3/lib/`.
 
-## Download Oozie
+## Download and Compile Oozie
 
 Download Oozie from its [offical website](http://oozie.apache.org), I am using oozie-4.3.1.
  ![](https://raw.githubusercontent.com/Pollyanna-Ye/Pollyanna-Ye.github.io/master/img/posts20191015/003.jpg)
