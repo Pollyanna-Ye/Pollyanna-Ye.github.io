@@ -1,6 +1,6 @@
 ---
 layout:     post
-title:      Unikernels Rise of the virtual library operating system
+title:      Unikernels, Rise of the virtual library operating system
 subtitle:   A Paper Digest
 date:       2019-10-28
 author:     Susu
